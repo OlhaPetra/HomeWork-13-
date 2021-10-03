@@ -89,15 +89,11 @@ function noImages() {
 }
 
 function onMakeBigImg(e) {
-console.log(e.target.id)
-
   if (e.target.id !== 'small_img') {
     return 
   }
-
   const instance = basicLightbox.create(
     `<img src="${e.target.dataset.large_img}" width="800" height="600">`,
   );
-
   instance.show();
 }

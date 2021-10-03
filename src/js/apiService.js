@@ -8,15 +8,15 @@ export default class ImagesApiService {
     this.perPage = 12;
   }
 
-  fetchImages() {
+  async fetchImages() {
     const url = `${BASE_URL}&q=${this.searchQuery}&page=${this.page}&per_page=${this.perPage}&key=${API_KEY}`
 
-    return fetch(url)
-      .then(response => response.json())
-      .then(array => {
-        this.incrementPage();
-        return array.hits
-      });
+    const response = await fetch(url);
+    const image = await response.json();
+    const hits = await image.hits;
+    this.incrementPage();
+    
+    return hits
   }
 
   incrementPage() {
