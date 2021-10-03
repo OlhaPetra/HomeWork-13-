@@ -1,7 +1,8 @@
 import ImagesApiService from './js/apiService.js';
 import refs from './js/refs';
-const { searchForm, imgContainer, box } = refs;
-console.log(imgContainer);
+const { searchForm, imgContainer } = refs;
+
+import * as basicLightbox from 'basiclightbox';
 
 import LoadMoreButton from './js/load-more-btn';
 import imgTempl from './tamplate/imgTempl.hbs';
@@ -18,6 +19,7 @@ const loadMoreBtn = new LoadMoreButton({
 
 searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', onLoad);
+imgContainer.addEventListener('click', onMakeBigImg);
 
 const imagesApiService = new ImagesApiService();
 
@@ -25,7 +27,6 @@ function onSearch(e) {
   e.preventDefault();
 
   imagesApiService.query = e.currentTarget.elements.query.value.trim();
-  console.log(imagesApiService.query);
 
   if (imagesApiService.query === '') {
     return errorSearch();
@@ -35,6 +36,7 @@ function onSearch(e) {
   imagesApiService.resetPage();
   clearImgMarkup();
   loadImg();
+  searchForm.reset();
 }
 
 function onLoad() {
@@ -44,18 +46,17 @@ function onLoad() {
 function loadImg() {
   loadMoreBtn.disabled();
   imagesApiService.fetchImages().then(imgs => {
-     if (imgs.length===0) {
-      noImages()
+    if (imgs.length === 0) {
+      noImages();
       loadMoreBtn.hide();
-    } else if (imgs.length <12) {
+    } else if (imgs.length < 12) {
       appendImgMarkup(imgs);
-      noSearch()
+      noSearch();
       loadMoreBtn.hide();
-    } 
-    else {
+    } else {
       appendImgMarkup(imgs);
-       loadMoreBtn.enable();
-         scrollEnd();
+      loadMoreBtn.enable();
+      scrollEnd();
     }
   });
 }
@@ -85,4 +86,18 @@ function noSearch() {
 
 function noImages() {
   error({ text: 'По Вашему запросу нет картинок. Введите другой запрос!' });
+}
+
+function onMakeBigImg(e) {
+console.log(e.target.id)
+
+  if (e.target.id !== 'small_img') {
+    return 
+  }
+
+  const instance = basicLightbox.create(
+    `<img src="${e.target.dataset.large_img}" width="800" height="600">`,
+  );
+
+  instance.show();
 }
